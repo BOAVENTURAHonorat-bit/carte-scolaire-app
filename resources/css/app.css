@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* --- Fluidité générale : transitions douces, barre de progression, feedback de chargement --- */
+
+/* Note : pas de "scroll-behavior: smooth" ici — combiné à un champ autofocus et à la barre
+   de progression en position fixe, ça provoque un flash noir pendant le scroll animé sur
+   certains moteurs de rendu. Le confort visuel ne vaut pas ce risque. */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+}
+
+/* Barre de progression en haut de page pendant une navigation ou un envoi de formulaire */
+#nprogress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--brand-primary, #4f46e5), var(--brand-secondary, #6366f1));
+    z-index: 9999;
+    opacity: 0;
+    transition: width 0.4s ease, opacity 0.3s ease;
+    box-shadow: 0 0 8px rgba(79, 70, 229, 0.6);
+}
+
+#nprogress-bar.is-active {
+    opacity: 1;
+}
+
+/* Fondu d'entrée du contenu de page.
+   Volontairement opacity seule (pas de transform) : combiner une transform animée
+   avec un élément position:fixed (la barre de progression) déclenche un bug de
+   rendu ("flash" noir) sur certains moteurs quand la page défile automatiquement
+   (ex: champ autofocus qui scrolle la page pendant l'animation). */
+.page-fade-in {
+    animation: page-fade-in 0.35s ease both;
+}
+
+@keyframes page-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Cartes et lignes : légère élévation au survol pour un rendu plus vivant */
+.card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.15);
+}
+
+tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+/* Boutons/formulaires : état "envoi en cours" (posé par app.js sur le bouton cliqué) */
+button[data-loading="true"],
+input[type="submit"][data-loading="true"] {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+button[data-loading="true"]::after,
+input[type="submit"][data-loading="true"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Champs de recherche/filtre : petit indicateur pendant l'auto-filtrage */
+.filter-pending {
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
